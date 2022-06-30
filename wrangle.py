@@ -37,10 +37,11 @@ def prepare_flight_data(df):
     df = remove_columns(df,cols_to_remove)
     for data in df:
         df.loc[df['ArrDelay'] <= 15, 'Delayed_Status'] = 0
-        df.loc[df['ArrDelay'] >= 15, 'Delayed_Status'] = 1
+        df.loc[df['ArrDelay'] > 15, 'Delayed_Status'] = 1
         df.loc[df['ArrDelay'] >= 60, 'Delayed_Status'] = 2
         df.loc[df['ArrDelay'] >= 120, 'Delayed_Status'] = 3
-        df.loc[df['ArrDelay'] >= 350, 'Delayed_Status'] = 4
+        df.loc[df['ArrDelay'] >= 180, 'Delayed_Status'] = 4
+    df['Delayed'] = np.where(df['Delayed_Status']== 0, 0, 1)    
     df = integers(df)
     df = df[df.UniqueCarrier.str.contains('WN|AA|MQ|UA|OO|DL')]
     df = df[df.Origin.str.contains('ATL|ORL|DFW|DEN|LAX') & df.Dest.str.contains('ATL|ORL|DFW|DEN|LAX')]
