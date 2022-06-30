@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import sklearn.preprocessing
 
 def get_flight_data():
     df = pd.read_csv('DelayedFlights.csv')
@@ -45,4 +46,36 @@ def prepare_flight_data(df):
     df = integers(df)
     df = df[df.UniqueCarrier.str.contains('WN|AA|MQ|UA|OO|DL')]
     df = df[df.Origin.str.contains('ATL|ORL|DFW|DEN|LAX') & df.Dest.str.contains('ATL|ORL|DFW|DEN|LAX')]
+    dummy_df = pd.get_dummies(df[['UniqueCarrier']], dummy_na=False, drop_first=[False])
+    df = pd.concat([df, dummy_df], axis=1)  
     return df
+
+def scale_data(train,
+              validate,
+              test,
+              columns_to_scale=['DayOfWeek', 'Month', 'UniqueCarrier_DL', 'UniqueCarrier_OO', 
+                 'UniqueCarrier_UA', 'UniqueCarrier_WN']):
+    '''
+    Scales the split data.
+    Takes in train, validate and test data and returns the scaled data.
+    '''
+    train_scaled = train.copy()
+    validate_scaled = validate.copy()
+    test_scaled = test.copy()
+    
+    #using MinMaxScaler (best showing distribution once scaled)
+    scaler = sklearn.preprocessing.MinMaxScaler()
+    scaler.fit(train[columns_to_scale])
+    
+    #creating a df that puts MinMaxScaler to work on the wanted columns and returns the split datasets and counterparts
+    train_scaled[columns_to_scale] = pd.DataFrame(scaler.transform(train[columns_to_scale]),
+                                                 columns=train[columns_to_scale].columns.values).set_index([train.index.values])
+    
+    validate_scaled[columns_to_scale] = pd.DataFrame(scaler.transform(validate[columns_to_scale]),
+                                                 columns=validate[columns_to_scale].columns.values).set_index([validate.index.values])
+    
+    test_scaled[columns_to_scale] = pd.DataFrame(scaler.transform(test[columns_to_scale]),
+                                                 columns=test[columns_to_scale].columns.values).set_index([test.index.values])
+    
+    
+    return train_scaled, validate_scaled, test_scaled
