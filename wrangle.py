@@ -48,14 +48,16 @@ def prepare_flight_data(df):
     df = df[df.Origin.str.contains('ATL|ORL|DFW|DEN|LAX') & df.Dest.str.contains('ATL|ORL|DFW|DEN|LAX')]
     dummy_df = pd.get_dummies(df[['UniqueCarrier']], dummy_na=False, drop_first=[False])
     df = pd.concat([df, dummy_df], axis=1)  
+    df.CRSDepTime = pd.to_datetime(df.CRSDepTime , format='%H%M').dt.time
+    df['departure_hour'] = pd.to_datetime(df['CRSDepTime'], format='%H:%M:%S').dt.hour
     return df
 
 
 def scale_data(train,
               validate,
               test,
-              columns_to_scale=['DayOfWeek', 'Month', 'UniqueCarrier_DL', 'UniqueCarrier_OO', 
-                 'UniqueCarrier_UA', 'UniqueCarrier_WN']):
+              columns_to_scale=['Year', 'Month', 'DayofMonth', 'DayOfWeek', 
+             'Distance', 'departure_hour']):
     '''
     Scales the split data.
     Takes in train, validate and test data and returns the scaled data.
