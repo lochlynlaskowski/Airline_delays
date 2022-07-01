@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import sklearn.preprocessing
+from sklearn.model_selection import train_test_split
 
 def get_flight_data():
     df = pd.read_csv('DelayedFlights.csv')
@@ -57,7 +58,7 @@ def scale_data(train,
               validate,
               test,
               columns_to_scale=['Year', 'Month', 'DayofMonth', 'DayOfWeek', 
-             'Distance', 'departure_hour']):
+             'Distance', 'departure_hour', 'Delayed_Status']):
     '''
     Scales the split data.
     Takes in train, validate and test data and returns the scaled data.
@@ -82,3 +83,13 @@ def scale_data(train,
     
     
     return train_scaled, validate_scaled, test_scaled
+
+def split_flight_data(df):
+    ''' This function splits the cleaned dataframe into train, validate, and test 
+    datasets.'''
+
+    train_validate, test = train_test_split(df, test_size=.2, 
+                                        random_state=123)
+    train, validate = train_test_split(train_validate, test_size=.3, 
+                                   random_state=123) 
+    return train, validate, test
