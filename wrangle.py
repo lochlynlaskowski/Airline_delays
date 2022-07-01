@@ -50,6 +50,7 @@ def prepare_flight_data(df):
     df = pd.concat([df, dummy_df], axis=1)  
     return df
 
+
 def scale_data(train,
               validate,
               test,
