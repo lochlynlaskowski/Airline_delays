@@ -58,7 +58,7 @@ def scale_data(train,
               validate,
               test,
               columns_to_scale=['Year', 'Month', 'DayofMonth', 'DayOfWeek', 
-             'Distance', 'departure_hour', 'Delayed_Status']):
+             'Distance', 'departure_hour']):
     '''
     Scales the split data.
     Takes in train, validate and test data and returns the scaled data.
